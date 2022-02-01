@@ -10,6 +10,19 @@ To start your Phoenix server:
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
+## Deployment
+
+A dockerfile is provided for deployment process.
+
+RUN `docker build -t chatbot .`
+
+RUN `docker run -p 127.0.0.1:80:4000 --env-file env.list chatbot`
+
+ADD `127.0.0.2  example.com` to your host file
+
+Now go to `example.com` from your browser
+
+
 ## Commands
 
   * `change-name :newname`
@@ -51,14 +64,6 @@ By typing the command `coin-price :filecoin` details of the coin market price fo
 Test cases results
 
 ![](/priv/static/images/Test-case.png)
-
-
-## DEPLOYMENT
-
-A dockerfile is provided for deployment process.
-
-RUN `docker build -t chatbot .`
-RUN `docker run -p 127.0.0.1:80:4000 --env-file env.list chatbot`
 
 
 ## Learn more
