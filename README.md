@@ -46,6 +46,21 @@ By typing the command `coin-price :filecoin` details of the coin market price fo
 
 ![](/priv/static/images/market-price.png)
 
+## TESTING
+
+Test cases results
+
+![](/priv/static/images/Test-case.png)
+
+
+## DEPLOYMENT
+
+A dockerfile is provided for deployment process.
+
+RUN `docker build -t chatbot .`
+RUN `docker run -p 127.0.0.1:80:4000 --env-file env.list chatbot`
+
+
 ## Learn more
 
   * Official website: https://www.phoenixframework.org/
