@@ -76,7 +76,8 @@ defmodule ChatbotWeb.CoinGecko do
   """
   def coinMarketChart(key) do
     with {:ok, response} <-  @client.get("coins/#{key}/market_chart", %{vs_currency: "usd", days: 14}) do
-      {:ok, response}
+      priceCollection =ChatbotWeb.PriceCollection.from(response)
+      {:ok, priceCollection}
     else
       error -> error
     end

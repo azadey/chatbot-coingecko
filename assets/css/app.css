@@ -11,7 +11,8 @@
   flex-grow: 1;
   padding: 1em;
   margin: -1em 1em 1em -1em;
-  border: 1px solid #cccccc;
+  border: 1px solid #ccc;
+  overflow: scroll;
 }
 
 #chat-messages p {
@@ -19,9 +20,37 @@
   padding: 0;
 }
 
+#user-list {
+  border-right: 1px solid #ccc;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  margin: -1em 1em 1em -1em;
+  padding: 1em;
+}
+
 #user-list p {
   margin: 0;
   padding: 0;
+}
+
+#chat-welcome-option {
+  background-color: #eee;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  padding: 10px;
+}
+
+#chat-welcome-option li {
+  margin: 0;
+  padding: 0;
+}
+
+#message-form form {
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  padding: 1em;
+  margin: -1em 1em 1em -1em;
 }
 
 /* Alerts and form errors used by phx.new */

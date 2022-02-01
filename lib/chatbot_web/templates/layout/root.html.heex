@@ -11,8 +11,16 @@
   </head>
   <body>
     <header>
+      <nav class="light-blue">
+        <div class="nav-wrapper container">
+          <a href="/" class="brand-logo">
+            <img width="50px" height="50px" src={Routes.static_path(@conn, "/images/mindvalley-logo.png")} />
+            CoinGecko Chatbot
+          </a>
+        </div>
+      </nav>  
       <section class="container">
-        <h1>Phoenix in Action Chat</h1>
+
       </section>
     </header>
     <%= @inner_content %>

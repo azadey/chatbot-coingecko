@@ -28,17 +28,28 @@ defmodule ChatbotWeb.RoomLive do
   @impl true
   def handle_event("submit_message", %{"chat" => %{"message" => message}}, socket) do
 
-    {start, _end} = :binary.match(message, ":")
-    useratom = String.slice(message, start+1, String.length(message))
-
     message = cond do
       String.contains?(message, "change-name") ->
-        Logger.info("Changing Name")
+        {start, _end} = :binary.match(message, ":")
+        useratom = String.slice(message, start+1, String.length(message))
         %{uuid: UUID.uuid4(), content: "Username updated", username: useratom}
       String.contains?(message, "search-by-name") ->
-        Logger.info("Search by Name")
+        {start, _end} = :binary.match(message, ":")
+        useratom = String.slice(message, start+1, String.length(message))
         {_status, coins} = ChatbotWeb.CoinGecko.search(%{query: useratom})
         content = handle_search(coins)
+        %{uuid: UUID.uuid4(), content: content, username: socket.assigns.username}
+      String.contains?(message, "search-by-id") ->
+        {start, _end} = :binary.match(message, ":")
+        useratom = String.slice(message, start+1, String.length(message))
+        {status, coin} = ChatbotWeb.CoinGecko.coin(useratom)
+        content = if status == :ok do handle_coin(coin) else "Could not find coin with the given id" end
+        %{uuid: UUID.uuid4(), content: content, username: socket.assigns.username}
+      String.contains?(message, "coin-price") ->
+        {start, _end} = :binary.match(message, ":")
+        useratom = String.slice(message, start+1, String.length(message))
+        {status, coin} = ChatbotWeb.CoinGecko.coinMarketChart(useratom)
+        content = if status == :ok do handle_market_price(coin) else "Could not find coin with the given id" end
         %{uuid: UUID.uuid4(), content: content, username: socket.assigns.username}
       true ->
         %{uuid: UUID.uuid4(), content: message, username: socket.assigns.username}
@@ -72,7 +83,7 @@ defmodule ChatbotWeb.RoomLive do
 
     user_list = ChatbotWeb.Presence.list(socket.assigns.topic)
     |> Map.keys()
-    Logger.info(user_list)
+
     {:noreply, assign(socket, messages: join_messages ++ leave_messages, user_list: user_list)}
   end
 
@@ -90,8 +101,8 @@ defmodule ChatbotWeb.RoomLive do
 
   def display_message(%{type: :welcome, uuid: uuid, username: username}) do
     ~E"""
-      <span id=<%= uuid %>>Welcome <%= username %>!</p>
-      <ul>
+      <span id=<%= uuid %>>Welcome <em><%= username %></em>!</p>
+      <ul id="chat-welcome-option">
         <li>Type <strong>change-name :newname</strong> to change your username!</li>
         <li>Type <strong>search-by-name :name</strong> to search for coins by name</li>
         <li>Type <strong>search-by-id :id</strong> to search coin by id</li>
@@ -104,8 +115,32 @@ defmodule ChatbotWeb.RoomLive do
     ~E"""
       <br />
       <%= for coin <- coins do %>
-          <img src="<%= coin.thumb %>" align="bottom"/>
-          <span><b>ID:</b> <%= coin.id %>, <b>Name:</b> <%= coin.name %></span><br />
+        <img src="<%= coin.thumb %>" align="bottom"/>
+        <span># <%= coin.id %> :: <b><%= coin.name %></b> ( <%= coin.symbol %> ) - <%= coin.market_cap_rank %></span><br />
+      <% end %>
+    """
+  end
+
+  def handle_coin(coin) do
+    ~E"""
+      <br />
+      <b>Name:</b> <%= coin.name %><br />
+      <b>ID:</b> <%= coin.id %><br />
+      <b>Symbol:</b> <%= coin.symbol %><br />
+      <b>Categories:</b> <%= for category <- coin.categories do %> <%= category %> - <% end %><br />
+      <b>Rank:</b> <%= coin.coingecko_rank %><br />
+      <b>Score:</b> <%= coin.coingecko_score %><br />
+      <b>Community Score:</b> <%= coin.community_score %>
+    """
+  end
+
+  def handle_market_price(prices) do
+    ~E"""
+      <br />
+      <%= for price <- prices.prices do %>
+        <%= for p <- price do %>
+          <%= p %>
+        <% end %> <br />
       <% end %>
     """
   end
